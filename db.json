@@ -1,0 +1,14 @@
+{
+  "todos": [
+    {
+      "text": "Hello World",
+      "completed": true,
+      "id": 1
+    },
+    {
+      "text": "Goodnight moon",
+      "completed": false,
+      "id": 2
+    }
+  ]
+}
