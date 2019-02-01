@@ -57,7 +57,7 @@ export default class TodoItem extends Component {
     }
 
     return (
-      <li className={classnames({
+      <li data-cy={`todo-item-${todo.id}`} className={classnames({
         completed: todo.completed,
         editing: this.state.editing
       })}>
