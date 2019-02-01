@@ -1,6 +1,6 @@
 describe('Todo Application', () => {
     it('loads the page', () => {
-        cy.visit('/todos')
+        cy.visit('/')
 
         cy.get('.todo-list li:nth-child(1)')
           .should('have.text', 'Hello world')
