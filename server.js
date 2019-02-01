@@ -19,8 +19,8 @@ server.use((req, res, next) => {
 });
 
 server.post('/api/todos/bulk_delete', ({body: { ids }}, res) => {
-  let todos = router.db.get('todos').filter(todo => !ids.includes(todo.id) ).value()
-  router.db.setState({ todos })
+  let todos = router.db.get('todos').value().filter(todo => !ids.includes(todo.id) )
+  router.db.setState({ todos: todos }).write()
   res.sendStatus(200)
 })
 
