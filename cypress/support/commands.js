@@ -23,3 +23,16 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("store", (commands = []) => {
+    if (typeof commands == 'string') {
+        commands = commands.split(".")
+    }
+    cy.window().its('store').invoke('getState').then(($store) => {
+        return commands.reduce((acc, command) => {
+            acc.should('have.ownProperty', command)
+
+            return acc.its(command);
+        }, cy.wrap($store))
+    })
+})
