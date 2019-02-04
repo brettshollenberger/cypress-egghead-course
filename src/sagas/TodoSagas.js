@@ -1,11 +1,20 @@
-import { takeEvery, takeLatest, put, all, select } from "redux-saga/effects";
+import { takeEvery, takeLatest, put, all, select, retry } from "redux-saga/effects";
 import axios from "axios";
 
 function getBaseUrl() {
   return 'http://localhost:3000'
 }
 
-function* createTodo(action) {
+function* createTodo(data) {
+  try {
+    yield retry(3, 1000, attemptCreateTodo, data)
+    yield put({ type: 'ADD_TODO_SUCCESS' });
+  } catch(e) {
+    yield put({ ...data, type: 'ADD_TODO_FAIL' });
+  }
+}
+
+function* attemptCreateTodo(action) {
   yield axios.post(`${getBaseUrl()}/api/todos`, {text: action.text, completed: false})
 }
 

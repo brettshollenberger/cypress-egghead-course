@@ -9,6 +9,16 @@
       "id": 4,
       "completed": true,
       "text": "Goodnight moon"
+    },
+    {
+      "text": "2nd Todo",
+      "completed": false,
+      "id": 5
+    },
+    {
+      "text": "2nd Todo",
+      "completed": false,
+      "id": 6
     }
   ]
 }
