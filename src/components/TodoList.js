@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import TodoItem from './TodoItem'
 
 const TodoList = ({ filteredTodos, actions }) => (
-  <ul className="todo-list">
+  <ul data-cy="todo-list" className="todo-list">
     {filteredTodos.map(todo =>
       <TodoItem key={todo.id} todo={todo} {...actions} />
     )}
