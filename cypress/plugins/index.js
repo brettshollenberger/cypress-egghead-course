@@ -14,4 +14,10 @@
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+  on('task', {
+    hello ({name}) {
+      console.log(`hello ${name}`)
+      return null;
+    }
+  })
 }
