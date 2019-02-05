@@ -1,8 +1,10 @@
+let _ = require('lodash');
+
 describe('Todo Application', () => {
   beforeEach(function() {
     cy.fixture('todos/all.json').as('todos')
 
-    cy.server()
+    cy.server({force404: true})
     // Alias the fixture data
     cy.route('/api/todos', '@todos').as('preload')
 
@@ -84,6 +86,25 @@ describe('Todo Application', () => {
         .should('have.length', 2)
 
       cy.get('[data-cy=todo-item-3]').should('not.exist')
+    })
+  })
+
+  context('Editing Todos', function() {
+    it.only('edits existing todos', function() {
+      cy.route('PUT', '/api/todos/1', 'ok', {delay: 20}).as('update')
+
+      cy.get('[data-cy=todo-label-1]').dblclick()
+      cy.get('[data-cy=todo-input-edit]').clear().type('Updated todo{enter}')
+
+      cy.wait('@update')
+
+      cy.store('todos')
+        .detect((todo) => { return todo.id == 1; })
+        .should('deep.equal', {
+          id: 1,
+          text: 'Updated todo',
+          completed: false
+        })
     })
 
   })
