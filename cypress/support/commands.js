@@ -23,6 +23,7 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+let _ = require("lodash");
 
 Cypress.Commands.add("store", (commands = []) => {
     if (typeof commands == 'string') {
@@ -35,4 +36,12 @@ Cypress.Commands.add("store", (commands = []) => {
             return acc.its(command);
         }, cy.wrap($store))
     })
+})
+
+Cypress.Commands.add("filter", { prevSubject: 'true' }, (subject, fn) => {
+    return _.filter(subject, fn)
+})
+
+Cypress.Commands.add("detect", { prevSubject: 'true' }, (subject, fn) => {
+    return _.find(subject, fn)
 })

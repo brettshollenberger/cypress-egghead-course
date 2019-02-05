@@ -33,9 +33,10 @@ export default class TodoItem extends Component {
     let element
     if (this.state.editing) {
       element = (
-        <TodoTextInput text={todo.text}
-                       editing={this.state.editing}
-                       onSave={(text) => this.handleSave(todo, text)} />
+        <TodoTextInput 
+          text={todo.text}
+          editing={this.state.editing}
+          onSave={(text) => this.handleSave(todo, text)} />
       )
     } else {
       element = (
@@ -47,7 +48,7 @@ export default class TodoItem extends Component {
                    editTodo(todo.id, { ...todo, completed: !todo.completed })
                  }
                   } />
-          <label onDoubleClick={this.handleDoubleClick}>
+          <label data-cy={`todo-label-${todo.id}`} onDoubleClick={this.handleDoubleClick}>
             {todo.text}
           </label>
           <button className="destroy"
