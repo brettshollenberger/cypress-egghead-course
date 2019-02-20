@@ -1,21 +1,26 @@
 import { takeEvery, takeLatest, put, all, select, retry } from "redux-saga/effects";
 import axios from "axios";
+const _ = require('lodash');
 
 function getBaseUrl() {
-  return 'http://localhost:3000'
+  return window.REACT_APP_API_URL ? window.REACT_APP_API_URL : 'http://localhost:3000'
 }
 
 function* createTodo(data) {
+  let todos = yield select(state => state.todos)
+  let thisTodo = _.find(todos, (todo) => { return todo.text === data.text });
+
   try {
-    yield retry(3, 1000, attemptCreateTodo, data)
-    yield put({ type: 'ADD_TODO_SUCCESS' });
+    let response = yield retry(3, 100, attemptCreateTodo, data)
+    let backendData = response.data
+    yield put({ backendData: backendData, data: thisTodo, type: 'ADD_TODO_SUCCESS' });
   } catch(e) {
     yield put({ ...data, type: 'ADD_TODO_FAIL' });
   }
 }
 
 function* attemptCreateTodo(action) {
-  yield axios.post(`${getBaseUrl()}/api/todos`, {text: action.text, completed: false})
+  return yield axios.post(`${getBaseUrl()}/api/todos`, {text: action.text, completed: false})
 }
 
 export function* fetchTodos() {

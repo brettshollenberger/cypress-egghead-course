@@ -39,7 +39,7 @@ describe('Todo Application', () => {
           response: ""
         }).as("createTodo");
 
-        cy.get('.new-todo').type('2nd Todo{enter}')
+        cy.get('.new-todo').type('3rd Todo{enter}')
 
         cy.wait('@createTodo')
 
@@ -58,7 +58,11 @@ describe('Todo Application', () => {
           method: 'POST',
           url: '/api/todos',
           status: 200,
-          response: "",
+          response: {
+            id: 3,
+            text: '3rd Todo',
+            completed: false
+          },
         }).as('createTodo3')
 
         cy.wait('@createTodo3')
@@ -75,7 +79,7 @@ describe('Todo Application', () => {
           method: 'POST',
           url: '/api/todos',
           status: 500,
-          response: "",
+          response: ''
         }).as('createTodo3')
 
         cy.wait('@createTodo3')
@@ -89,7 +93,7 @@ describe('Todo Application', () => {
     })
 
     context('Editing Todos', function () {
-      it.only('edits existing todos', function () {
+      it('edits existing todos', function () {
         cy.route('PUT', '/api/todos/1', 'ok', { delay: 20 }).as('update')
 
         cy.get('[data-cy=todo-label-1]').dblclick()
@@ -110,13 +114,26 @@ describe('Todo Application', () => {
 
   })
 
-  context.only('Full end-to-end testing', function() {
+  context('Full end-to-end testing', function() {
     beforeEach(function() {
       cy.visit('/')
     })
 
     it('performs a hello world', function() {
       cy.task('hello', {name: 'world'})
+    })
+
+    it.only('seeds the database', function() {
+      cy.task('db:seed', {todos: [{id: 1, text: 'Seed the database', completed: false}]})
+      cy.visit('/')
+
+      cy.get('[data-cy=todo-item-1]')
+        .should('have.text', 'Seed the database')
+        .should('not.have.class', 'completed')
+        .find('.toggle')
+        .should('not.be.checked')
+
+      cy.get('[data-cy=todo-list]').its('length').should('equal', 1)
     })
   })
 })

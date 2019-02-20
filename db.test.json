@@ -1,0 +1,9 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "text": "Seed the database",
+      "completed": false
+    }
+  ]
+}

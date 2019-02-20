@@ -10,6 +10,7 @@
 
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
+const db = require('../../db-seeder')
 
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
@@ -18,6 +19,15 @@ module.exports = (on, config) => {
     hello ({name}) {
       console.log(`hello ${name}`)
       return null;
-    }
+    },
+
+    'db:seed': (inputSeeds) => {
+      let defaultSeed = {todos: []}
+      let seeds = inputSeeds ? inputSeeds : defaultSeed;
+
+      db.seed(seeds)
+
+      return null
+    },
   })
 }

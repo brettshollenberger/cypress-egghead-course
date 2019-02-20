@@ -1,24 +1,14 @@
 {
   "todos": [
     {
-      "text": "Hello worldzzz",
+      "text": "Hello world",
       "completed": false,
-      "id": 3
+      "id": 1
     },
     {
-      "id": 4,
+      "id": 2,
       "completed": true,
       "text": "Goodnight moon"
-    },
-    {
-      "text": "2nd Todo",
-      "completed": false,
-      "id": 5
-    },
-    {
-      "text": "2nd Todo",
-      "completed": false,
-      "id": 6
     }
   ]
 }

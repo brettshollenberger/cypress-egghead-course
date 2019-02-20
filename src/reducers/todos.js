@@ -5,10 +5,12 @@ import {
   EDIT_TODO,
   LOCAL_CLEAR_COMPLETED,
   BULK_EDIT_TODOS,
+  ADD_TODO_SUCCESS,
   ADD_TODO_FAIL,
 } from '../constants/ActionTypes'
 
 const initialState = [ ]
+const _ = require('lodash');
 
 export default function todos(state = initialState, action) {
   switch (action.type) {
@@ -19,9 +21,21 @@ export default function todos(state = initialState, action) {
       return [
         ...state,
         {
-          id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
+          id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), 0) + 1,
           completed: false,
           text: action.text
+        }
+      ]
+
+    case ADD_TODO_SUCCESS:
+      let thisTodo = _.find(state, todo => todo.id === action.data.id)
+      let backendTodo = action.backendData
+
+      return [
+        ..._.without(state, thisTodo),
+        {
+          ...thisTodo,
+          id: backendTodo.id
         }
       ]
 

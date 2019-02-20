@@ -12,6 +12,8 @@ const sagaMiddleware = createSagaMiddleware()
 const store = createStore(reducer, applyMiddleware(sagaMiddleware))
 sagaMiddleware.run(rootSaga)
 
+window.REACT_APP_API_URL = process.env.REACT_APP_API_URL
+
 render(
   <Provider store={store}>
     <App store={store} />
