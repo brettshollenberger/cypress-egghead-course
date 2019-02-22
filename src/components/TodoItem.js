@@ -47,10 +47,10 @@ export default class TodoItem extends Component {
                    editTodo(todo.id, { ...todo, completed: !todo.completed })
                  }
                   } />
-          <label onDoubleClick={this.handleDoubleClick}>
+          <label data-cy={`todo-label-${todo.id}`} onDoubleClick={this.handleDoubleClick}>
             {todo.text}
           </label>
-          <button className="destroy"
+          <button data-cy={`destroy-todo-${todo.id}`} className="destroy"
                   onClick={() => deleteTodo(todo.id)} />
         </div>
       )

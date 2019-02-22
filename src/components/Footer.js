@@ -19,7 +19,7 @@ const Footer = (props) => {
       </span>
       <ul className="filters">
         {Object.keys(FILTER_TITLES).map(filter =>
-          <li key={filter}>
+          <li data-cy={`filter-${filter}`} key={filter}>
             <FilterLink filter={filter}>
               {FILTER_TITLES[filter]}
             </FilterLink>
@@ -29,6 +29,7 @@ const Footer = (props) => {
       {
         !!completedCount &&
         <button
+          data-cy="clear-completed"
           className="clear-completed"
           onClick={onClearCompleted}
         >Clear completed</button>

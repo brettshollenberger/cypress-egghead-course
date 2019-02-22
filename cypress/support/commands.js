@@ -24,6 +24,7 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 const _ = require('lodash');
+const factories = require('../factories/factories.js')
 
 Cypress.Commands.add("store", (commands = []) => {
     if (typeof commands == 'string') {
@@ -38,6 +39,39 @@ Cypress.Commands.add("store", (commands = []) => {
     })
 })
 
+Cypress.Commands.add("seed", (seeds) => {
+    let mappedSeeds = _.reduce(seeds, (output, seeds, key) => {
+        let factory = factories[key] || undefined;
+
+        if (_.isUndefined(factory)) {
+            output[key] = seeds;
+        } else {
+            output[key] = seeds.map((seed) => {
+                let mapped = _.cloneDeep(seed);
+                let factoryOverrides = new factory().build();
+
+                return _.defaults(mapped, factoryOverrides);
+            })
+        }
+
+        return output;
+    }, {});
+
+    cy.task('db:seed', mappedSeeds)
+})
+
+Cypress.Commands.add("resetSeeds", () => {
+    _.each(factories, (factory, unused) => {
+        _.each(factory, (val, unused) => {
+            if (_.isFunction(val.reset)) {
+                val.reset();
+            }
+
+        })
+    })
+    return true;
+})
+
 Cypress.Commands.add("filter", { prevSubject: true }, (subject, fn) => {
     return _.filter(subject, fn);
 })
@@ -48,4 +82,12 @@ Cypress.Commands.add("detect", {prevSubject: true}, (subject, fn) => {
 
 Cypress.Commands.add("pick", {prevSubject: true}, (subject, paths) => {
     return _.pick(subject, paths);
+})
+
+Cypress.Commands.add("map", {prevSubject: true}, (subject, fn) => {
+    return _.map(subject, fn);
+})
+
+beforeEach(() => {
+    cy.resetSeeds();
 })
