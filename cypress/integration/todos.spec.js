@@ -161,7 +161,7 @@ describe('Todo Application', () => {
       cy.get('[data-cy=todo-list]').its('children').its('length').should('equal', 2)
     })
 
-    it.only("tests against the db", function() { 
+    it("tests against the db", function() { 
       cy.seed({ todos: [{ }, { completed: true }] })
       cy.visit('/')
 
@@ -177,6 +177,33 @@ describe('Todo Application', () => {
           completed: true
         },
       ])
+    })
+
+    it.only("tests XHR requests", function() {
+      cy.server()
+      cy.seed({todos: []})
+      cy.route('GET', '/api/todos').as('preload')
+      cy.visit("/");
+      cy.wait('@preload')
+    
+      // We seeded an empty DB
+      cy.store('todos').its('length').should('equal', 0)
+    
+      cy.get('[data-cy=todo-list]').children().should('have.length', 0)
+    
+      // Create first todo
+      cy.route({
+        method: "POST",
+        url: "/api/todos"
+      }).as("createTodo");
+    
+      cy.get('.new-todo').type('1st Todo{enter}')
+    
+      cy.wait('@createTodo').then((xhr) => {
+        cy.wrap(xhr.request.body).should('deep.equal', {text: "1st Todo", completed: false})
+        cy.wrap(xhr.response.body).should('deep.equal', {id: 1, text: "1st Todo", completed: false})
+        cy.wrap(xhr.status).should('equal', 201)
+      })
     })
   })
 })
