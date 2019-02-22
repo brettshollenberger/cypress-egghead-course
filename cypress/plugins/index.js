@@ -15,19 +15,23 @@ const db = require('../../db-seeder')
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
-  on('task', {
-    hello ({name}) {
-      console.log(`hello ${name}`)
+  on("task", {
+    hello({ name }) {
+      console.log(`hello ${name}`);
       return null;
     },
 
-    'db:seed': (inputSeeds) => {
-      let defaultSeed = {todos: []}
+    "db:seed": inputSeeds => {
+      let defaultSeed = { todos: [] };
       let seeds = inputSeeds ? inputSeeds : defaultSeed;
 
-      db.seed(seeds)
+      db.seed(seeds);
 
-      return null
+      return null;
     },
-  })
+
+    "db:snapshot": (table) => {
+      return db.snapshot(table);
+    }
+  });
 }

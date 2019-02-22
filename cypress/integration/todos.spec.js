@@ -114,7 +114,7 @@ describe('Todo Application', () => {
 
   })
 
-  context.only('Full end-to-end testing', function() {
+  context('Full end-to-end testing', function() {
     beforeEach(function() {
       cy.visit('/')
     })
@@ -155,6 +155,17 @@ describe('Todo Application', () => {
       cy.get('[data-cy=todo-list]').children().its('length').should('equal', 2)
     })
 
+    it.only("tests against the db", function() { 
+      cy.seed({ todos: [{ }] })
+      cy.visit('/')
 
+      cy.task('db:snapshot', 'todos').should('deep.equal', [
+        {
+          id: 1,
+          text: 'Hello World',
+          completed: false
+        },
+      ])
+    })
   })
 })
