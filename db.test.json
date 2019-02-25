@@ -1,9 +1,19 @@
 {
   "todos": [
     {
-      "text": "1st Todo",
+      "text": "Hello World",
+      "id": 1,
+      "completed": false
+    },
+    {
+      "text": "Goodnight Moon",
+      "id": 2,
+      "completed": false
+    },
+    {
+      "text": "3rd Todo",
       "completed": false,
-      "id": 1
+      "id": 3
     }
   ],
   "users": [

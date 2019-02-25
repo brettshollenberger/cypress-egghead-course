@@ -179,7 +179,7 @@ describe('Todo Application', () => {
       ])
     })
 
-    it.only("tests XHR requests", function() {
+    it("tests XHR requests", function() {
       cy.server()
       cy.seed({todos: []})
       cy.route('GET', '/api/todos').as('preload')
@@ -204,6 +204,102 @@ describe('Todo Application', () => {
         cy.wrap(xhr.response.body).should('deep.equal', {id: 1, text: "1st Todo", completed: false})
         cy.wrap(xhr.status).should('equal', 201)
       })
+    })
+
+    // Now we're finally going to bring all the pieces of end-to-end testing together to
+    // make some full assertions at each level of the stack.
+    it.only("creates todos successfully", function() {
+      cy.task('db:snapshot', 'todos').should('be.empty')
+
+      cy.server()
+      cy.seed({todos: [{text: 'Hello World'}, {text: 'Goodnight Moon'}]})
+
+      let dbSnapshot = [
+        {text: "Hello World", id: 1, completed: false},
+        {text: "Goodnight Moon", id: 2, completed: false},
+      ]
+
+      cy.task('db:snapshot', 'todos').then((seeds) => {
+        cy.wrap(seeds).its('length').should('eq', 2)
+
+        cy.wrap(seeds).should('deep.equal', dbSnapshot)
+      });
+
+      cy.route('GET', '/api/todos').as('preload')
+      cy.visit("/");
+
+      // Before the preload call occurs, no todos are on the page
+      cy.store('todos').should('be.empty')
+
+      // We can express this another way, which is to say that our todo-list
+      // html list is empty
+      cy.get('[data-cy=todo-list]')
+        .children()
+        .should('have.length', 0)
+
+      // Assert that the API returns the expected data
+      cy.wait('@preload').then((xhr) => {
+        cy.wrap(xhr.response.body).should('deep.equal', dbSnapshot)
+      })
+
+      // Assert that the Redux store has been updated
+      cy.store('todos').should('deep.equal', dbSnapshot)
+
+      // Assert that the HTML nodes now exist
+      cy.get('[data-cy=todo-list]')
+        .children()
+        .should('have.length', 2)
+
+      cy.get('[data-cy=todo-item-1]')
+        .should('have.text', 'Hello World')
+        .should('not.have.class', 'completed')
+        .find('.toggle')
+        .should('not.be.checked')
+
+      // And assert that their representation reflects the underlying data
+      cy.get('[data-cy=todo-item-2]')
+        .should('have.text', 'Goodnight Moon')
+        .should('not.have.class', 'completed')
+        .find('.toggle')
+        .should('not.be.checked')
+
+      // We're going to create a new todo
+      cy.route({
+        method: "POST",
+        url: "/api/todos"
+      }).as("createTodo");
+
+      // Find the new todo input, and submit a new todo
+      cy.get('[data-cy=todo-input-new]').type('3rd Todo{enter}')
+
+      // Assert against our request AND our response
+      cy.wait('@createTodo').then((xhr) => {
+        cy.wrap(xhr.request.body).should('deep.equal', {text: "3rd Todo", completed: false})
+        cy.wrap(xhr.response.body).should('deep.equal', {text: "3rd Todo", completed: false, id: 3})
+      })
+
+      // Assert that the database was updated
+      cy.task('db:snapshot', 'todos').should('deep.equal', 
+        dbSnapshot.concat([{
+          id: 3,
+          completed: false,
+          text: "3rd Todo"
+        }])
+      )
+
+      // Store reflects successful creation of new todo
+      cy.store('todos').its('length').should('equal', 3)
+
+      // UI reflects new element
+      cy.get('[data-cy=todo-list]')
+        .children()
+        .should('have.length', 3)
+
+      cy.get('[data-cy=todo-item-3]')
+        .should('have.text', '3rd Todo')
+        .should('not.have.class', 'completed')
+        .find('.toggle')
+        .should('not.be.checked')
     })
   })
 })
