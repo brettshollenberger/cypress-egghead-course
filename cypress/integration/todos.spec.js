@@ -1,12 +1,19 @@
 describe('Todo Application', () => {
-  beforeEach(function() {
-    cy.fixture('todos/all.json').as('todos')
-  })
-
   it('loads the page', function () {
     cy.server()
     // Alias the fixture data
-    cy.route('/api/todos', '@todos').as('preload')
+    cy.route('/api/todos', [
+      {
+        id: 3,
+        text: 'Hello world',
+        completed: false
+      },
+      {
+        id: 4,
+        text: 'Goodnight moon',
+        completed: true
+      }
+    ]).as('preload')
 
     cy.visit('/')
     cy.wait('@preload')
