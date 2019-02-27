@@ -2,18 +2,20 @@ describe('Todo Application', () => {
   it('loads the page', function () {
     cy.server()
     // Alias the fixture data
-    cy.route('/api/todos', [
+    let todos = [
       {
-        id: 3,
+        id: 1,
         text: 'Hello world',
         completed: false
       },
       {
-        id: 4,
+        id: 2,
         text: 'Goodnight moon',
         completed: true
       }
-    ]).as('preload')
+    ]
+
+    cy.route('/api/todos', todos).as('preload')
 
     cy.visit('/')
     cy.wait('@preload')
@@ -21,7 +23,7 @@ describe('Todo Application', () => {
     cy.store('example.test.first').should('equal', 1)
 
     // Access the fixture data as this.todos
-    cy.store('todos').should('deep.equal', this.todos)
+    cy.store('todos').should('deep.equal', todos)
 
     cy.get('[data-cy=todo-item-1]')
       .should('have.text', 'Hello world')
