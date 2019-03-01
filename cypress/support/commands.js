@@ -61,13 +61,10 @@ Cypress.Commands.add("seed", (seeds) => {
 })
 
 Cypress.Commands.add("resetSeeds", () => {
-    _.each(factories, (factory, unused) => {
-        _.each(factory, (val, unused) => {
-            if (_.isFunction(val.reset)) {
-                val.reset();
-            }
-
-        })
+    _.each(factories, (factory, key) => {
+        if (_.isFunction(factory.reset)) {
+            factory.reset()
+        }
     })
     return true;
 })
@@ -90,4 +87,5 @@ Cypress.Commands.add("map", {prevSubject: true}, (subject, fn) => {
 
 beforeEach(() => {
     cy.resetSeeds();
+    cy.task('db:seed', {todos: []})
 })

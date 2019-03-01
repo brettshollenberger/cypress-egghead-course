@@ -27,8 +27,8 @@ class Factory {
         return this._idGenerator = this._idGenerator || new PrimaryKeyGenerator();
     }
 
-    reset() {
-        this.constructor.idGenerator.reset();
+    static reset() {
+        this.idGenerator.reset();
     }
     
     constructor() {
