@@ -1,4 +1,24 @@
 {
-  "todos": [],
-  "users": []
+  "todos": [
+    {
+      "id": 1,
+      "text": "Hello World 1",
+      "completed": false
+    },
+    {
+      "completed": true,
+      "id": 2,
+      "text": "Hello World 2"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "email": "test-email-1@gmail.com"
+    },
+    {
+      "email": "whatever@gmail.com",
+      "id": 2
+    }
+  ]
 }

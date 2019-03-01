@@ -142,7 +142,7 @@ describe('Todo Application', () => {
       cy.get('[data-cy=todo-list]').its('children').its('length').should('equal', 2)
     })
 
-    it('tests', function() { 
+    it('resets between tests', function() { 
       cy.seed({ todos: [{ }, { completed: true }], users: [{}, {email: "whatever@gmail.com"}] })
       cy.visit('/')
 
