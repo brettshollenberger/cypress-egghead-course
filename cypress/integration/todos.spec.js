@@ -114,7 +114,7 @@ describe('Todo Application', () => {
 
   })
 
-  context('Full end-to-end testing', function() {
+  context('Prep for end-to-end testing', function() {
     beforeEach(function() {
       cy.visit('/')
     })
