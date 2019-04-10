@@ -1,4 +1,4 @@
-context.skip("Full end-to-end testing", function() {
+context("Full end-to-end testing", function() {
   it("loads todos", function() {
     cy.server()
     cy.seed({todos: [{'text': "Hello World"}, {'text': 'Goodnight Moon', completed: true}]})

@@ -168,7 +168,7 @@ describe('Todo Application', () => {
       ])
     })
 
-    it.only("tests XHR requests", function() {
+    it("tests XHR requests", function() {
       cy.server()
       cy.seed({todos: []})
       cy.route('GET', '/api/todos').as('preload')

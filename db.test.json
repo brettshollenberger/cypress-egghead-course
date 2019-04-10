@@ -1,9 +1,9 @@
 {
   "todos": [
     {
-      "text": "1st Todo",
+      "id": 2,
       "completed": false,
-      "id": 1
+      "text": "2nd Todo"
     }
   ]
 }
