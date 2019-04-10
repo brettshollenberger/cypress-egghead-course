@@ -1,7 +1,7 @@
-context.skip("Full end-to-end testing", function() {
+context("Full end-to-end testing", function() {
   it("loads todos", function() {
     cy.server()
-    cy.seed([{'text': "Hello World"}, {'text': 'Goodnight Moon', completed: true}])
+    cy.seed({todos: [{'text': "Hello World"}, {'text': 'Goodnight Moon', completed: true}]})
     cy.route('GET', '/api/todos').as('preload')
     cy.visit("/");
     cy.wait('@preload')
@@ -25,7 +25,7 @@ context.skip("Full end-to-end testing", function() {
 
   it("creates todos and edits todos", function() {
     cy.server()
-    cy.seed([])
+    cy.seed({todos: []})
     cy.route('GET', '/api/todos').as('preload')
     cy.visit("/");
     cy.wait('@preload')
