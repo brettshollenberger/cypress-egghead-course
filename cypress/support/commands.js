@@ -24,15 +24,43 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-Cypress.Commands.add("store", (commands = []) => {
-    if (typeof commands == 'string') {
-        commands = commands.split(".")
-    }
-    cy.window().its('store').invoke('getState').then(($store) => {
-        return commands.reduce((acc, command) => {
-            acc.should('have.ownProperty', command)
+Cypress.Commands.add("store", (str = '') => {
+    let log = Cypress.log({ name: 'store' })
 
-            return acc.its(command);
-        }, cy.wrap($store))
+    const cb = (state) => {
+        log.set({
+            message: JSON.stringify(state),
+            consoleProps: () => {
+                return state
+            }
+        }).snapshot().end()
+
+        return state
+    }
+
+    return cy.window({log: false}).then(function($w) { return $w.store.getState() }).then((state) => {
+        if (str.length > 0) {
+            return cy.wrap(state, {log: false}).its(str).then(cb)
+        } else {
+            return cy.wrap(state, {log: false}).then(cb)
+        }
+        
     })
+})
+
+let loMethods = _.functions(_).map((fn) => { return `lo_${fn}`})
+
+loMethods.forEach((loFn) => {
+    let loName = loFn.replace(/lo_/, '')
+    Cypress.Commands.add(loFn, {prevSubject: true}, (subject, fn, ...args) => {
+        let result = _[loName](subject, fn, ...args)
+        Cypress.log({
+            name: loFn,
+            message: JSON.stringify(result),
+            consoleProps: () => { return result }
+        })
+
+        return result
+    })
+
 })
