@@ -26,17 +26,47 @@
 const _ = require('lodash');
 const factories = require('../factories/factories.js')
 
-Cypress.Commands.add("store", (commands = []) => {
-    if (typeof commands == 'string') {
-        commands = commands.split(".")
-    }
-    cy.window().its('store').invoke('getState').then(($store) => {
-        return commands.reduce((acc, command) => {
-            acc.should('have.ownProperty', command)
+const _ = require('lodash')
 
-            return acc.its(command);
-        }, cy.wrap($store))
+Cypress.Commands.add("store", (str = '') => {
+    let log = Cypress.log({ name: 'store' })
+
+    const cb = (state) => {
+        log.set({
+            message: JSON.stringify(state),
+            consoleProps: () => {
+                return state
+            }
+        }).snapshot().end()
+
+        return state
+    }
+
+    return cy.window({log: false}).then(function($w) { return $w.store.getState() }).then((state) => {
+        if (str.length > 0) {
+            return cy.wrap(state, {log: false}).its(str).then(cb)
+        } else {
+            return cy.wrap(state, {log: false}).then(cb)
+        }
+        
     })
+})
+
+let loMethods = _.functions(_).map((fn) => { return `lo_${fn}`})
+
+loMethods.forEach((loFn) => {
+    let loName = loFn.replace(/lo_/, '')
+    Cypress.Commands.add(loFn, {prevSubject: true}, (subject, fn, ...args) => {
+        let result = _[loName](subject, fn, ...args)
+        Cypress.log({
+            name: loFn,
+            message: JSON.stringify(result),
+            consoleProps: () => { return result }
+        })
+
+        return result
+    })
+
 })
 
 Cypress.Commands.add("seed", (seeds) => {
@@ -67,22 +97,6 @@ Cypress.Commands.add("resetSeeds", () => {
         }
     })
     return true;
-})
-
-Cypress.Commands.add("filter", { prevSubject: true }, (subject, fn) => {
-    return _.filter(subject, fn);
-})
-
-Cypress.Commands.add("detect", {prevSubject: true}, (subject, fn) => {
-    return _.find(subject, fn);
-})
-
-Cypress.Commands.add("pick", {prevSubject: true}, (subject, paths) => {
-    return _.pick(subject, paths);
-})
-
-Cypress.Commands.add("map", {prevSubject: true}, (subject, fn) => {
-    return _.map(subject, fn);
 })
 
 beforeEach(() => {
