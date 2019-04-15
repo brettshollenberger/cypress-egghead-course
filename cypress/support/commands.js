@@ -24,6 +24,8 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+const _ = require('lodash')
+
 Cypress.Commands.add("store", (str = '') => {
     let log = Cypress.log({ name: 'store' })
 
