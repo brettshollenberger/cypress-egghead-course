@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 describe('Todo Application', () => {
   it('loads the page', function () {
     cy.server()
@@ -5,14 +7,29 @@ describe('Todo Application', () => {
     let todos = [
       {
         id: 1,
-        text: 'Hello world',
+        text: '1st Todo',
         completed: false
       },
       {
         id: 2,
-        text: 'Goodnight moon',
+        text: '2nd Todo',
         completed: true
-      }
+      },
+      {
+        id: 3,
+        text: '3rd Todo',
+        completed: false
+      },
+      {
+        id: 4,
+        text: '4th Todo',
+        completed: true
+      },
+      {
+        id: 5,
+        text: '5th Todo',
+        completed: false
+      },
     ]
 
     cy.route('/api/todos', todos).as('preload')
@@ -23,18 +40,14 @@ describe('Todo Application', () => {
     cy.store('example.test.first').should('equal', 1)
 
     // Access the fixture data as this.todos
-    cy.store('todos').should('deep.equal', todos)
+    cy.store('todos')
+      .lo_find((todo) => { return todo.id == 1 })
+      .lo_pick('text')
+      .should('deep.equal', 
+      {
+        text: '1st Todo',
+      },
+    )
 
-    cy.get('[data-cy=todo-item-1]')
-      .should('have.text', 'Hello world')
-      .should('not.have.class', 'completed')
-      .find('.toggle')
-      .should('not.be.checked')
-
-    cy.get('[data-cy=todo-item-2]')
-      .should('have.text', 'Goodnight moon')
-      .should('have.class', 'completed')
-      .find('.toggle')
-      .should('be.checked')
   })
 })
