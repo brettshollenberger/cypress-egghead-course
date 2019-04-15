@@ -102,7 +102,7 @@ describe('Todo Application', () => {
         cy.wait('@update')
 
         cy.store('todos')
-          .detect((todo) => { return todo.id == 1; })
+          .lo_find((todo) => { return todo.id == 1; })
           .should('deep.equal', {
             id: 1,
             text: 'Updated todo',
