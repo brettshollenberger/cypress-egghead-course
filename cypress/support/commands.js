@@ -24,8 +24,6 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-const _ = require('lodash')
-
 Cypress.Commands.add("store", (str = '') => {
     let log = Cypress.log({ name: 'store' })
 
@@ -48,21 +46,4 @@ Cypress.Commands.add("store", (str = '') => {
         }
         
     })
-})
-
-let loMethods = _.functions(_).map((fn) => { return `lo_${fn}`})
-
-loMethods.forEach((loFn) => {
-    let loName = loFn.replace(/lo_/, '')
-    Cypress.Commands.add(loFn, {prevSubject: true}, (subject, fn, ...args) => {
-        let result = _[loName](subject, fn, ...args)
-        Cypress.log({
-            name: loFn,
-            message: JSON.stringify(result),
-            consoleProps: () => { return result }
-        })
-
-        return result
-    })
-
 })
