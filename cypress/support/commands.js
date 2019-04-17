@@ -26,10 +26,10 @@
 const _ = require('lodash');
 const factories = require('../factories/factories.js')
 
-const _ = require('lodash')
-
 Cypress.Commands.add("store", (str = '') => {
-    let log = Cypress.log({ name: 'store' })
+    let log = Cypress.log({
+        name: 'store'
+    })
 
     const cb = (state) => {
         log.set({
@@ -42,26 +42,40 @@ Cypress.Commands.add("store", (str = '') => {
         return state
     }
 
-    return cy.window({log: false}).then(function($w) { return $w.store.getState() }).then((state) => {
+    return cy.window({
+        log: false
+    }).then(function ($w) {
+        return $w.store.getState()
+    }).then((state) => {
         if (str.length > 0) {
-            return cy.wrap(state, {log: false}).its(str).then(cb)
+            return cy.wrap(state, {
+                log: false
+            }).its(str).then(cb)
         } else {
-            return cy.wrap(state, {log: false}).then(cb)
+            return cy.wrap(state, {
+                log: false
+            }).then(cb)
         }
-        
+
     })
 })
 
-let loMethods = _.functions(_).map((fn) => { return `lo_${fn}`})
+let loMethods = _.functions(_).map((fn) => {
+    return `lo_${fn}`
+})
 
 loMethods.forEach((loFn) => {
     let loName = loFn.replace(/lo_/, '')
-    Cypress.Commands.add(loFn, {prevSubject: true}, (subject, fn, ...args) => {
+    Cypress.Commands.add(loFn, {
+        prevSubject: true
+    }, (subject, fn, ...args) => {
         let result = _[loName](subject, fn, ...args)
         Cypress.log({
             name: loFn,
             message: JSON.stringify(result),
-            consoleProps: () => { return result }
+            consoleProps: () => {
+                return result
+            }
         })
 
         return result
@@ -69,7 +83,7 @@ loMethods.forEach((loFn) => {
 
 })
 
-Cypress.Commands.add("seed", (seeds) => {
+Cypress.Commands.add("seed", (seeds, options = {}) => {
     let mappedSeeds = _.reduce(seeds, (output, seeds, key) => {
         let factory = factories[key] || undefined;
 
@@ -87,7 +101,19 @@ Cypress.Commands.add("seed", (seeds) => {
         return output;
     }, {});
 
-    cy.task('db:seed', mappedSeeds)
+    if (options.log != false) {
+        Cypress.log({
+            name: 'seed',
+            message: JSON.stringify(mappedSeeds),
+            consoleProps: () => {
+                return mappedSeeds
+            }
+        })
+    }
+
+    cy.task('db:seed', mappedSeeds, {
+        log: false
+    })
 })
 
 Cypress.Commands.add("resetSeeds", () => {
@@ -101,4 +127,5 @@ Cypress.Commands.add("resetSeeds", () => {
 
 beforeEach(() => {
     cy.resetSeeds();
+    cy.seed({ todos: [] }, { log: false })
 })

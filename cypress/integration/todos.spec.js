@@ -123,7 +123,7 @@ describe('Todo Application', () => {
       cy.task('hello', {name: 'world'})
     })
 
-    it('seeds the database', function() {
+    it.only('seeds the database', function() {
       cy.seed({ todos: [{ text: 'Seed the database' }, { completed: true }] })
       cy.visit('/')
 
