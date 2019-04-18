@@ -142,8 +142,13 @@ describe('Todo Application', () => {
       cy.get('[data-cy=todo-list]').its('children').its('length').should('equal', 2)
     })
 
+<<<<<<< HEAD
     it('resets between tests', function() { 
       cy.seed({ todos: [{ }, { text: 'Hello World 2', completed: true }] })
+=======
+    it("resets between tests", function() { 
+      cy.seed({ todos: [{ }, { completed: true }], users: [{}, {email: "whatever@gmail.com"}] })
+>>>>>>> 86176039bc9ca303b765935589d4588a2b4802f1
       cy.visit('/')
 
       cy.get('[data-cy=todo-item-1]')
@@ -155,16 +160,35 @@ describe('Todo Application', () => {
       cy.get('[data-cy=todo-list]').children().its('length').should('equal', 2)
     })
 
+<<<<<<< HEAD
     it.only("tests against the db", function() { 
       cy.seed({ todos: [{ }] })
+=======
+      cy.get('[data-cy=todo-list]').its('children').its('length').should('equal', 2)
+    })
+
+    it.only("tests against the db", function() { 
+      cy.seed({ todos: [{ }, { completed: true }] })
+>>>>>>> 86176039bc9ca303b765935589d4588a2b4802f1
       cy.visit('/')
 
       cy.task('db:snapshot', 'todos').should('deep.equal', [
         {
           id: 1,
+<<<<<<< HEAD
           text: 'Hello World',
           completed: false
         },
+=======
+          text: 'Hello World 1',
+          completed: false
+        },
+        {
+          id: 2,
+          text: 'Hello World 2',
+          completed: true
+        },
+>>>>>>> 86176039bc9ca303b765935589d4588a2b4802f1
       ])
     })
   })
