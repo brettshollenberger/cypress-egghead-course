@@ -25,6 +25,21 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 const _ = require('lodash');
 const factories = require('../factories/factories.js')
+let generators = {}
+
+function *gen() {
+    let id = 0;
+    
+    while (true) {
+        yield id += 1;
+        
+        if (id > 100000) { id = 0; }
+    }
+}
+
+function resetGenerators() {
+    _.each(factories, (factory, key) => { generators[key] = gen() })
+}
 
 Cypress.Commands.add("store", (str = '') => {
     let log = Cypress.log({
@@ -91,15 +106,12 @@ Cypress.Commands.add("seed", (seeds, options = {}) => {
             output[key] = seeds;
         } else {
             output[key] = seeds.map((seed) => {
-                let mapped = _.cloneDeep(seed);
-                let factoryOverrides = new factory().build();
-
-                return _.defaults(mapped, factoryOverrides);
+                return _.defaults(seed, factory, {id: generators[key].next().value})
             })
         }
-
-        return output;
-    }, {});
+        
+        return output
+    }, {})
 
     if (options.log != false) {
         Cypress.log({
@@ -111,21 +123,10 @@ Cypress.Commands.add("seed", (seeds, options = {}) => {
         })
     }
 
-    cy.task('db:seed', mappedSeeds, {
-        log: false
-    })
-})
-
-Cypress.Commands.add("resetSeeds", () => {
-    _.each(factories, (factory, key) => {
-        if (_.isFunction(factory.reset)) {
-            factory.reset();
-        }
-    })
-    return true;
+    cy.task('db:seed', mappedSeeds, { log: false })
 })
 
 beforeEach(() => {
-    cy.resetSeeds();
+    resetGenerators();
     cy.seed({ todos: [] }, { log: false })
 })
